@@ -4,9 +4,11 @@ import random
 
 alise_number = 0
 status = 0
+forms_of_can = ["умеешь", "создан", "делаешь", "делать", "правила"]
+numbers_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 # Функция для непосредственной обработки диалога.
 def handle_dialog(request, response, user_storage):
-    global alise_number, status
+    global alise_number, status, forms_of_can, numbers_list
     if request.is_new_session or status == 0 or (status == 2 and str(request.command.lower()) == "да"):
         alise_number = 0
         # Это новый пользователь.
@@ -22,10 +24,35 @@ def handle_dialog(request, response, user_storage):
         }
 
         buttons, user_storage = get_suggests(user_storage)
-        response.set_text('Отлично! Я загадываю число, а Вы пытаетесь его отгадать. После Вашей попытки я говорю, сколько цифр угадано без совпадения с их позициями в моём числе (коровы) и не угадано (быки). Какое число загадать?')
+        response.set_text('Я загадываю число, а Вы пытаетесь его отгадать. После Вашей попытки я говорю, сколько цифр угадано без совпадения с их позициями в моём числе (коровы) и не угадано (быки). Какое число загадать?')
         response.set_buttons(buttons)
         status = 1
         return response, user_storage
+
+    for i in str(request.command.lower()).split():
+        if i in forms_of_can:
+            alise_number = 0
+            # Это новый пользователь.
+            # Инициализируем сессию и поприветствуем его.
+
+            user_storage = {
+                'suggests': [
+                    "однозначное",
+                    "двузначное",
+                    "трёхзначное",
+                    "четырёхзначное"
+                ]
+            }
+
+            buttons, user_storage = get_suggests(user_storage)
+            response.set_text('Я загадываю число, а Вы пытаетесь его отгадать. После Вашей попытки я говорю, сколько цифр угадано без совпадения с их позициями в моём числе (коровы) и не угадано (быки). Какое число загадать?')
+            response.set_buttons(buttons)
+            status = 1
+            return response, user_storage
+
+
+    #if str(request.command.lower()) in forms_of_can:
+        #£response.set_text('Я загадываю число, а Вы пытаетесь его отгадать. После Вашей попытки я говорю, сколько цифр угадано без совпадения с их позициями в моём числе (коровы) и не угадано (быки). Какое число загадать?')
 
     if status == 2:
         response.set_text('Окей.')
@@ -53,13 +80,11 @@ def handle_dialog(request, response, user_storage):
          alise_number = random.randint(100, 999)
          return response, user_storage
 
-
-    try:
-        number = int(request.command.lower())
-    except:
-        response.set_text('Кажется, Вы ввели что-то не то. Скажите число, а я отвечу, сколько в нём быков и коров.')
-        status = 0
-        return response, user_storage
+    for i in str(request.command.lower()):
+        if i not in numbers_list:
+            response.set_text('Кажется, Вы ввели что-то не то. Скажите число, а я отвечу, сколько в нём быков и коров, или запросите правила игры.')
+            status = 1
+            return response, user_storage
 
     if len(str(request.command.lower())) != len(str(alise_number)):
         response.set_text('Количество цифр в Вашем числе не совпадает с моим. Назовите число ещё раз.')
