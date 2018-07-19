@@ -4,7 +4,7 @@ import random
 
 alise_number = 0
 status = 0
-forms_of_can = ["умеешь", "создан", "делаешь", "делать", "правила"]
+forms_of_can = ["умеешь", "создан", "делаешь", "делать", "правила", "помощь"]
 numbers_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 # Функция для непосредственной обработки диалога.
 def handle_dialog(request, response, user_storage):
@@ -134,4 +134,5 @@ def get_suggests(user_storage):
     ]
 
 
+    ####
     return suggests, user_storage
